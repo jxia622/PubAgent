@@ -9,12 +9,6 @@ PLAN -> ACT -> OBSERVE -> DECIDE -> SYNTHESIZE -> VERIFY -> ANSWER
 It is not a persistent local RAG system and does not build a vector database. It searches public scholarly APIs, ranks retrieved articles, extracts short exact quotations, and returns a concise summary plus quote-backed sources.
 
 
-## Demo
-
-![PubAgent demo](docs/pubagent_demo.gif)
-
-The video version is available at [`docs/pubagent_demo.webm`](docs/pubagent_demo.webm).
-
 ## What It Returns
 
 - `summary`: a cautious answer synthesized only from retrieved evidence.
@@ -40,44 +34,62 @@ The current public-source mix is strongest for biomedical and life-science quest
 
 ## Install
 
+Requires Python 3.9 or newer.
+
 ```bash
-cd "/Users/jackxia/Desktop/Python/research_agent"
+git clone https://github.com/jxia622/PubAgent.git
+cd PubAgent
 python3 -m venv .venv
 source .venv/bin/activate
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-## Run
+Optional editable install, which creates a `pubagent` command:
 
 ```bash
-python3 -m research_agent.main "What evidence supports AI for protein structure prediction?"
+python -m pip install --upgrade pip
+pip install -e .
 ```
 
-Return the full JSON trace:
+## Run PubAgent
 
 ```bash
-python3 -m research_agent.main "What evidence supports AI for protein structure prediction?" --json
+./PubAgent
 ```
 
-Disable the file cache for one run:
+If you installed it with `pip install -e .`, run:
 
 ```bash
-python3 -m research_agent.main "What evidence supports AI for protein structure prediction?" --cache none
+pubagent
+```
+
+PubAgent opens an interactive session. Ask questions directly inside the app:
+
+```text
+research> What evidence supports AI for protein structure prediction?
+```
+
+Keep asking questions until you are done, then exit:
+
+```text
+research> /exit
 ```
 
 ## Save Results
 
-Each one-shot search automatically stores the most recent result in `storage/last_result.json`. Save that result after the command finishes:
+Inside PubAgent:
 
-```bash
-python3 -m research_agent.main --save-last
-python3 -m research_agent.main --save-last exports/protein_search.txt --format txt
+```text
+/save-last exports/protein_search.txt --format txt
+/save-session exports/session.json
 ```
 
-For a multi-question workflow, use interactive mode:
+Friendly aliases also work:
 
-```bash
-python3 -m research_agent.main --interactive
+```text
+save current
+save session
 ```
 
 Interactive launch prints the PubAgent banner and asks whether you want to configure an AI provider. You can choose OpenAI, Claude, or skip and use deterministic fallback. Public literature API keys are optional at startup.
@@ -135,19 +147,7 @@ python3 -m research_agent.main "your question" --year-range 2009 2011 --text-mod
 python3 -m research_agent.main "your question" --after-year 2018 --text-mode full-text
 ```
 
-Inside interactive mode:
-
-```text
-/save-last [path] [--format json|txt]
-/save-session [path] [--format json|txt]
-```
-
-Friendly aliases also work:
-
-```text
-save current
-save session
-```
+The one-shot module form is mainly for scripting and JSON export. Normal use should stay inside PubAgent.
 
 ## Optional Keys
 

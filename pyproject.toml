@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pubagent"
+version = "0.1.0"
+description = "Grounded literature retrieval with ranked quote evidence and zero fabricated citations."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+pubagent = "research_agent.main:interactive_main"
+
+[tool.setuptools.packages.find]
+include = ["research_agent*"]
