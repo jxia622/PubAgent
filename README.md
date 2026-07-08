@@ -1,4 +1,4 @@
-# PubAgent
+# PubAgent - grounded literature retrieval, zero fabricated citations
 
 PubAgent is a standalone, live literature-search assistant for researchers who need citable evidence. It runs an agent loop:
 
@@ -8,9 +8,6 @@ PLAN -> ACT -> OBSERVE -> DECIDE -> SYNTHESIZE -> VERIFY -> ANSWER
 
 It is not a persistent local RAG system and does not build a vector database. It searches public scholarly APIs, ranks retrieved articles, extracts short exact quotations, and returns a concise summary plus quote-backed sources.
 
-```text
-grounded literature retrieval, zero fabricated citations
-```
 
 ## Demo
 
