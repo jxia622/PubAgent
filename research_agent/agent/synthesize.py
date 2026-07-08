@@ -8,6 +8,7 @@ from research_agent.models import Article, EvidenceQuote, ObserveResult
 
 
 MAX_QUOTE_WORDS = 25
+MAX_SUMMARY_SENTENCES = 2
 
 
 def citation_label(article: Article) -> str:
@@ -75,6 +76,16 @@ def _short_quote(sentence: str, question_terms: set[str]) -> str:
     prefix = "... " if best_start > 0 else ""
     suffix = " ..." if best_start + MAX_QUOTE_WORDS < len(words) else ""
     return f"{prefix}{quote}{suffix}"
+
+
+def trim_summary(summary: str, *, max_sentences: int = MAX_SUMMARY_SENTENCES) -> str:
+    summary = " ".join(summary.split())
+    if not summary:
+        return summary
+    sentences = [part.strip() for part in re.split(r"(?<=[.!?])\s+", summary) if part.strip()]
+    if len(sentences) <= max_sentences:
+        return summary
+    return " ".join(sentences[:max_sentences])
 
 
 def _candidate_passages(article: Article, *, text_mode: str = "any") -> list[tuple[str, str]]:
@@ -169,7 +180,7 @@ class Synthesizer:
         payload = self.llm.complete_json(
             system=(
                 "Write a concise researcher-facing answer summary using only the provided quoted evidence. "
-                "Do not invent facts. Mention uncertainty when evidence is sparse or indirect."
+                "Limit the summary to 1-2 sentences. Do not invent facts. Mention uncertainty when evidence is sparse or indirect."
             ),
             user={
                 "question": question,
@@ -183,11 +194,11 @@ class Synthesizer:
                     }
                     for item in evidence_quotes
                 ],
-                "output_schema": {"summary": "string"},
+                "output_schema": {"summary": "string, 1-2 sentences"},
             },
         )
         if payload and payload.get("summary"):
-            return str(payload["summary"])
+            return trim_summary(str(payload["summary"]))
         return self._fallback_synthesize(question, articles, observation, evidence_quotes)
 
     def _fallback_synthesize(
@@ -210,9 +221,8 @@ class Synthesizer:
 
         source_count = len({quote.article.key for quote in evidence_quotes})
         year_values = [int(article.year) for article in articles if article.year and article.year.isdigit()]
-        year_note = f" The ranked sources span {min(year_values)}-{max(year_values)}." if year_values else ""
+        year_note = f" spanning {min(year_values)}-{max(year_values)}" if year_values else ""
         return (
-            f"The retrieved literature contains {source_count} directly relevant citable sources for this question. "
-            "Use the ranked quotations below as the primary evidence trail, then verify the full articles before citing."
-            f"{year_note}"
+            f"PubAgent found {source_count} directly relevant citable source{'s' if source_count != 1 else ''}{year_note}. "
+            "Use the ranked quotations below as the evidence trail and verify the full articles before citing."
         )

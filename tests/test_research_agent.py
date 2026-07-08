@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import tempfile
 import os
+import re
 import subprocess
 import sys
 import unittest
@@ -10,7 +11,8 @@ from pathlib import Path
 from research_agent.agent.act import RetrievalActor
 from research_agent.agent.loop import ResearchAgent
 from research_agent.agent.plan import Planner
-from research_agent.agent.synthesize import MAX_QUOTE_WORDS, select_evidence_quotes
+from research_agent.agent.synthesize import MAX_QUOTE_WORDS, Synthesizer, select_evidence_quotes, trim_summary
+from research_agent.models import ObserveResult
 from research_agent.cache.store import JsonCacheStore
 from research_agent.main import (
     APIKeyConfig,
@@ -220,6 +222,21 @@ class ResearchAgentTests(unittest.TestCase):
         self.assertEqual(len(quotes), 1)
         self.assertEqual(quotes[0].source_section, "full_text")
         self.assertIn("accuracy improved", quotes[0].quote)
+
+    def test_summary_is_limited_to_two_sentences(self) -> None:
+        long_summary = "First sentence. Second sentence. Third sentence should be removed."
+        self.assertEqual(trim_summary(long_summary), "First sentence. Second sentence.")
+
+        article = FakeSemanticScholar().search("protein structure prediction")[0]
+        quotes = select_evidence_quotes("AI protein structure prediction accuracy", [article], max_quotes=1)
+        summary = Synthesizer()._fallback_synthesize(
+            "AI protein structure prediction",
+            [article],
+            ObserveResult(sufficient=True, reason="ok", relevant_count=1),
+            quotes,
+        )
+        sentences = [part for part in re.split(r"(?<=[.!?])\\s+", summary) if part.strip()]
+        self.assertLessEqual(len(sentences), 2)
 
     def test_agent_filters_articles_by_year_and_text_mode(self) -> None:
         articles = [
