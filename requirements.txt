@@ -1,0 +1,2 @@
+# No required third-party packages.
+# Optional OpenAI/Anthropic calls are made through standard-library HTTPS.
