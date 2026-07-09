@@ -10,21 +10,11 @@ It is not a persistent local RAG system and does not build a vector database. It
 
 ## System Design
 
-```mermaid
-flowchart TD
-    question["Research question"] --> plan["Plan search terms"]
-    plan --> search["Search public literature sources"]
-    search --> judge["Check whether the evidence is useful"]
-    judge --> enough{"Enough direct evidence?"}
-    enough -- "No" --> refine["Refine the search"]
-    refine --> search
-    enough -- "Yes" --> answer["Return a grounded answer"]
-    answer --> output["Summary, ranked quotes, citations, verification trace"]
-```
+![PubAgent system architecture](docs/pubagent_architecture.svg)
 
-PubAgent works like a cautious research assistant. It turns a question into search terms, searches live scholarly sources, checks whether the retrieved articles directly answer the question, and refines the search when evidence is too weak. Once it has enough useful material, it writes a short answer backed by ranked quotations and citation details.
+PubAgent is an agentic retrieval loop with one LLM boundary: the orchestrator plans the PubMed search strategy and decides whether the retrieved evidence is sufficient. Everything after that is deterministic tool use: PubMed search, source-text fetching, quote extraction, and exact-match quote verification.
 
-The key idea is grounding: PubAgent does not answer from memory or from a private vector database. It answers from the articles it just retrieved, keeps the evidence trail visible, and includes verification checks so unsupported claims are easier to spot.
+The key idea is grounding. PubAgent does not answer from memory or from a private vector database. It returns a provenance trace with ranked quotes, source metadata, and verification status so users can see where each piece of evidence came from.
 
 
 ## What It Returns

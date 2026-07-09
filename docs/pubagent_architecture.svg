@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">PubAgent system architecture diagram</title>
+  <desc id="desc">Dark theme architecture diagram showing PubAgent as an agentic literature retrieval loop with an LLM orchestrator, deterministic tool-calling layer, separate exact-match verification, iterative refinement, and provenance output.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#080c18"/>
+      <stop offset="55%" stop-color="#10172a"/>
+      <stop offset="100%" stop-color="#07111f"/>
+    </linearGradient>
+    <pattern id="grid" width="36" height="36" patternUnits="userSpaceOnUse">
+      <path d="M 36 0 L 0 0 0 36" fill="none" stroke="#22304f" stroke-width="0.7" opacity="0.35"/>
+    </pattern>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#92a4c8"/>
+    </marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrowAmber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#fbbf24"/>
+    </marker>
+    <style>
+      .title { fill: #f8fafc; font: 700 31px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: 0; }
+      .subtitle { fill: #b9c5d8; font: 400 15px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: 0; }
+      .section { fill: #dbeafe; font: 700 13px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: 0.8px; }
+      .box-title { fill: #f8fafc; font: 700 18px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: 0; }
+      .box-note { fill: #cbd5e1; font: 400 13px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: 0; }
+      .small { fill: #aebbd0; font: 400 12px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: 0; }
+      .edge { fill: none; stroke: #92a4c8; stroke-width: 2.4; marker-end: url(#arrow); }
+      .edge-blue { fill: none; stroke: #38bdf8; stroke-width: 2.6; marker-end: url(#arrowBlue); }
+      .edge-green { fill: none; stroke: #34d399; stroke-width: 2.6; marker-end: url(#arrowGreen); }
+      .edge-amber { fill: none; stroke: #fbbf24; stroke-width: 2.6; marker-end: url(#arrowAmber); }
+      .edge-dash { fill: none; stroke: #92a4c8; stroke-width: 2.1; stroke-dasharray: 7 7; marker-end: url(#arrow); }
+      .label { fill: #cbd5e1; font: 600 12px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: 0; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="760" fill="url(#bg)"/>
+  <rect width="1200" height="760" fill="url(#grid)" opacity="0.45"/>
+  <rect x="28" y="28" width="1144" height="704" rx="26" fill="none" stroke="#263756" stroke-width="1.2"/>
+
+  <text x="64" y="76" class="title">PubAgent System Architecture</text>
+  <text x="64" y="104" class="subtitle">Agentic PubMed literature retrieval with one LLM reasoning boundary and deterministic grounding.</text>
+
+  <rect x="64" y="163" width="190" height="112" rx="18" fill="#162033" stroke="#526179" stroke-width="1.4" filter="url(#softShadow)"/>
+  <text x="159" y="207" text-anchor="middle" class="box-title">User Query</text>
+  <text x="159" y="231" text-anchor="middle" class="box-note">CLI input</text>
+
+  <rect x="325" y="145" width="268" height="150" rx="22" fill="#3b1f62" stroke="#c084fc" stroke-width="2.1" filter="url(#softShadow)"/>
+  <text x="459" y="188" text-anchor="middle" class="box-title">Orchestrator</text>
+  <text x="459" y="214" text-anchor="middle" class="box-note">LLM boundary</text>
+  <text x="459" y="238" text-anchor="middle" class="small">single model call</text>
+  <text x="459" y="262" text-anchor="middle" class="small">plans search, judges sufficiency</text>
+
+  <rect x="728" y="124" width="352" height="254" rx="24" fill="#0f2f3d" stroke="#38bdf8" stroke-width="1.7" filter="url(#softShadow)"/>
+  <text x="760" y="157" class="section">DETERMINISTIC TOOLS</text>
+
+  <rect x="760" y="181" width="288" height="50" rx="12" fill="#12394b" stroke="#38bdf8" stroke-width="1.1"/>
+  <text x="784" y="205" class="box-title" font-size="16">PubMed Search Tool</text>
+  <text x="784" y="222" class="small">RAG retrieval via E-utilities</text>
+
+  <rect x="760" y="247" width="288" height="50" rx="12" fill="#12394b" stroke="#38bdf8" stroke-width="1.1"/>
+  <text x="784" y="271" class="box-title" font-size="16">Source Fetch Tool</text>
+  <text x="784" y="288" class="small">abstract and full-text fetch</text>
+
+  <rect x="760" y="313" width="288" height="50" rx="12" fill="#12394b" stroke="#38bdf8" stroke-width="1.1"/>
+  <text x="784" y="337" class="box-title" font-size="16">Quote Extract Tool</text>
+  <text x="784" y="354" class="small">deterministic quote selection</text>
+
+  <path d="M 254 219 C 283 219, 292 219, 325 219" class="edge"/>
+  <text x="280" y="205" class="label">question</text>
+
+  <path d="M 593 205 C 647 180, 677 167, 728 164" class="edge-blue"/>
+  <text x="634" y="164" class="label">tool calls</text>
+
+  <path d="M 728 315 C 673 330, 641 324, 593 286" class="edge-blue"/>
+  <text x="626" y="346" class="label">retrieved evidence</text>
+
+  <polygon points="459,405 548,463 459,521 370,463" fill="#1d2b42" stroke="#92a4c8" stroke-width="1.6" filter="url(#softShadow)"/>
+  <text x="459" y="455" text-anchor="middle" class="box-title" font-size="16">Evidence</text>
+  <text x="459" y="475" text-anchor="middle" class="box-title" font-size="16">Sufficiency Gate</text>
+  <text x="459" y="496" text-anchor="middle" class="small">agentic decision point</text>
+
+  <path d="M 459 295 C 459 333, 459 362, 459 405" class="edge"/>
+  <text x="478" y="353" class="label">judge</text>
+
+  <path d="M 370 463 C 282 459, 246 384, 305 315 C 323 294, 344 282, 371 272" class="edge-amber"/>
+  <text x="219" y="403" class="label">insufficient evidence</text>
+  <text x="239" y="424" class="small">refine search plan</text>
+
+  <rect x="669" y="488" width="286" height="118" rx="22" fill="#123826" stroke="#34d399" stroke-width="2.1" filter="url(#softShadow)"/>
+  <text x="812" y="532" text-anchor="middle" class="box-title">Exact Quote Check</text>
+  <text x="812" y="557" text-anchor="middle" class="box-note">deterministic grounding</text>
+  <text x="812" y="581" text-anchor="middle" class="small">verbatim source-text match</text>
+
+  <path d="M 548 463 C 599 467, 629 492, 669 532" class="edge-green"/>
+  <text x="594" y="477" class="label">enough evidence</text>
+
+  <rect x="659" y="647" width="318" height="64" rx="18" fill="#172033" stroke="#fbbf24" stroke-width="1.5" filter="url(#softShadow)"/>
+  <text x="818" y="674" text-anchor="middle" class="box-title" font-size="17">Citation Trace Output</text>
+  <text x="818" y="696" text-anchor="middle" class="box-note">ranked quotes, metadata, verification status</text>
+
+  <path d="M 812 606 C 812 623, 812 631, 812 647" class="edge-green"/>
+
+  <rect x="81" y="612" width="424" height="70" rx="18" fill="#101827" stroke="#334155" stroke-width="1.2"/>
+  <circle cx="111" cy="638" r="7" fill="#c084fc"/>
+  <text x="130" y="643" class="small">LLM reasoning is isolated inside the orchestrator boundary.</text>
+  <circle cx="111" cy="664" r="7" fill="#38bdf8"/>
+  <text x="130" y="669" class="small">Retrieval and extraction tools are deterministic.</text>
+  <circle cx="111" cy="690" r="7" fill="#34d399"/>
+  <text x="130" y="695" class="small">Grounding checks are separate from the language model.</text>
+</svg>
