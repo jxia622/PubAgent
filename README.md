@@ -8,6 +8,10 @@ PLAN -> ACT -> OBSERVE -> DECIDE -> SYNTHESIZE -> VERIFY -> ANSWER
 
 It is not a persistent local RAG system and does not build a vector database. It searches public scholarly APIs, ranks retrieved articles, extracts short exact quotations, and returns a concise summary plus quote-backed sources.
 
+## Demo
+
+![PubAgent CLI demo](docs/pubagent_demo.gif)
+
 ## System Design
 
 ![PubAgent system architecture](docs/pubagent_architecture.svg)
