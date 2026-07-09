@@ -8,6 +8,55 @@ PLAN -> ACT -> OBSERVE -> DECIDE -> SYNTHESIZE -> VERIFY -> ANSWER
 
 It is not a persistent local RAG system and does not build a vector database. It searches public scholarly APIs, ranks retrieved articles, extracts short exact quotations, and returns a concise summary plus quote-backed sources.
 
+## System Design
+
+```mermaid
+flowchart TD
+    user["Researcher"] --> cli["PubAgent CLI<br/>research_agent.main"]
+    cli --> config["Local config<br/>storage/settings.json<br/>storage/api_keys.json"]
+    cli --> agent["ResearchAgent loop<br/>agent/loop.py"]
+    cli --> cache["JSON cache<br/>storage/research_agent_cache.json"]
+
+    agent --> planner["Planner<br/>agent/plan.py"]
+    planner -. "optional JSON planning" .-> llm["OpenAI or Claude<br/>agent/llm.py"]
+    planner --> actor["RetrievalActor<br/>agent/act.py"]
+
+    actor <--> cache
+    actor --> pubmed["PubMed"]
+    actor --> semantic["Semantic Scholar"]
+    actor --> europe["Europe PMC"]
+    actor --> pmc["PMC full text"]
+    actor --> unpaywall["Unpaywall links"]
+
+    pubmed --> articles["Article records<br/>models.py"]
+    semantic --> articles
+    europe --> articles
+    pmc --> articles
+    unpaywall --> articles
+
+    articles --> observer["Observer<br/>agent/observe.py"]
+    observer -. "optional JSON judgment" .-> llm
+    observer --> decision{"Enough evidence?"}
+    decision -- "No, refine query" --> planner
+    decision -- "Yes or cap reached" --> rank["Rank articles<br/>select short quotes"]
+
+    rank --> synth["Synthesizer<br/>agent/synthesize.py"]
+    synth -. "optional JSON summary" .-> llm
+    synth --> verifier["Verifier<br/>agent/verify.py"]
+    verifier -. "optional JSON checks" .-> llm
+    verifier --> answer["Answer payload<br/>summary, ranked_evidence,<br/>citations, trace, verification"]
+    answer --> output["Terminal output<br/>storage/last_result.json<br/>exports/"]
+```
+
+At a high level, PubAgent is a live retrieval agent rather than a stored-document RAG app:
+
+- `research_agent/main.py` handles the interactive CLI, one-shot runs, settings, API-key loading, progress display, and result export.
+- `research_agent/agent/loop.py` coordinates the plan, retrieve, observe, refine, synthesize, and verify steps.
+- `research_agent/agent/act.py` queries public scholarly sources, merges duplicate articles, attaches PMC full text when available, and adds Unpaywall open-access links.
+- `research_agent/agent/llm.py` optionally uses OpenAI or Claude for JSON-only planning, observation, synthesis, and verification. If no AI key is configured, deterministic fallback logic runs instead.
+- `research_agent/models.py` defines the shared data objects: search plans, articles, evidence quotes, trace entries, and final answers.
+- `research_agent/cache/store.py` stores API responses in a local JSON cache so repeated searches can reuse earlier retrieval results.
+
 
 ## What It Returns
 
